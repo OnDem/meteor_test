@@ -1,0 +1,47 @@
+<form>
+<div class="majak" ng-controller="PropertiesListCtrl">
+	<div class="row">
+		<div class="col-xs-2">
+		</div>
+		<div class="col-xs-8">
+			<h2>Заполнение данных</h2>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-12">
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-2">
+		</div>
+		<div class="col-xs-2">
+			<input type='text' class="form-control" ng-model="newProperty.name">
+		</div>
+		<div class="col-xs-4">
+			<textarea class="form-control" ng-model="newProperty.description"></textarea>
+		</div>
+		<div class="col-xs-2">
+			<button class="btn btn-success" ng-click="properties.push(newProperty); newProperty='';">Далее</button>
+		</div>
+	</div>
+	<div class="row btm" ng-repeat="property in properties.slice().reverse()">
+		<div class="col-xs-2">
+		</div>
+		<div class="col-xs-7">
+			<hr>
+		</div>
+		<div class="col-xs-12">
+		</div>
+		<div class="col-xs-2">
+		</div>
+		<div class="col-xs-2">
+			<label>{{ property.name }}</label>
+		</div>
+		<div class="col-xs-4 booble">
+			<p>{{ property.description }}</p>
+		</div>
+		<div class="col-xs-12">
+		</div>
+	</div>
+</div>
+</form>
