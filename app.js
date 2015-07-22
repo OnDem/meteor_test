@@ -17,12 +17,12 @@ if (Meteor.isClient) {
               controller: 'ChatsCtrl'
             })
             .state('newchat', {
-              url: '/new/:courseId',
+              url: '/new/:courseId/role/:roleId',
               templateUrl: 'chats.ng.html',
               controller: 'ChatsCtrl'
             })
             .state('chat', {
-              url: '/chats/:chatId',
+              url: '/chats/:chatId/role/:roleId',
               templateUrl: 'chat.ng.html',
               controller: 'ChatCtrl'
             });
@@ -55,8 +55,9 @@ if (Meteor.isClient) {
           if ( $stateParams.courseId > 0 )
             {
               courseId = $stateParams.courseId - 0;
+              $scope.roleId = $stateParams.roleId;
               $scope.newchat = $meteor.object(Chats,{course:courseId});
-              console.log($scope.newchat);
+              console.log($scope.newchat,$scope.roleId);
               if($scope.newchat.course)
                {
                  console.log('Yes');
@@ -89,8 +90,16 @@ if (Meteor.isClient) {
               $scope.chat = $meteor.object(Chats,$stateParams.chatId);
 
               $scope.addNewContent = function () {
-                $scope.newContent.userId = 3;
-                $scope.newContent.username = 'bot';
+                if ( $stateParams.roleId == 5 )
+                  {
+                    $scope.newContent.userId = 5;
+                    $scope.newContent.username = 'Автор';
+                  }
+                else
+                  {
+                    $scope.newContent.userId = 3;
+                    $scope.newContent.username = 'Помощник';
+                  }
                 $scope.newContent.dt = new Date();
                 $scope.chat.content.push($scope.newContent);
                 $scope.newContent = {};

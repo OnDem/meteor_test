@@ -1,22 +1,10 @@
 <div>
-	<div class="row">
-		<div class="col-sm-4" ng-show="newchat">
-			<a href="/chats/{{newchat._id}}">Открыть чат</a>
+	<div class="row" ng-show="newchat">
+		<div class="col-xs-2 col-xs-offset-4">
+			<h3>Чат курса № {{ newchat.course }}</h3>
+			<h4>Кол-во сообщений: {{ newchat.content.length }}</h4>
+			<p>Последнее сообщение <br/>{{ newchat.content.slice(-1).pop().dt | date: 'yyyy-MM-dd HH:mm:ss Z' }}</p>
+			<a href="/chats/{{newchat._id}}/role/{{roleId}}"><h4>Открыть чат</h4></a>
 		</div>
 	</div>
-<!--
-	<div class="row">
-		<div class="col-sm-4">
-			<input type="text" ng-model="courseId">
-		</div>
-		<div class="col-sm-4">
-			<button class="btn btn-success" ng-click="addNewChat()">Добавить чат</button>
-		</div>
-	</div>
-	<div class="row btm" ng-repeat="chat in chats.slice().reverse()">
-		<div class="col-sm-8">
-			<h3><a href="/chats/{{chat._id}}"> Чат курса номер {{ chat.course }} </a></h3>
-		</div>
-	</div>
--->
 </div>
