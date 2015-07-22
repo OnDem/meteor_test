@@ -1,44 +1,100 @@
-Properties = new Mongo.Collection("properties");
+Chats = new Mongo.Collection("chats");
 
 if (Meteor.isClient) {
     angular
-      .module('lighthouse',['angular-meteor','ui.bootstrap']);
+      .module('lighthouse',['angular-meteor','ui.router','ui.bootstrap']);
 
     angular
-      .module('lighthouse').controller('PropertiesListCtrl', ['$scope','$meteor',
-        function($scope,$meteor){
+      .module('lighthouse').config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
+        function($urlRouterProvider, $stateProvider, $locationProvider){
 
-          $scope.properties = $meteor.collection(Properties);
+          $locationProvider.html5Mode(true);
 
-          $scope.remove = function(property){
-            $scope.properties.splice( $scope.properties.indexOf(property), 1 );
+          $stateProvider
+            .state('chats', {
+              url: '/chats',
+              templateUrl: 'chats.ng.html',
+              controller: 'ChatsCtrl'
+            })
+            .state('chat', {
+              url: '/chats/:chatId',
+              templateUrl: 'chat.ng.html',
+              controller: 'ChatCtrl'
+            });
+
+            $urlRouterProvider.otherwise('/chats');
+    }]);
+
+    angular
+      .module('lighthouse').controller('ChatsCtrl', ['$scope','$meteor','$stateParams',
+        function($scope,$meteor,$stateParams){
+
+          $scope.chats = $meteor.collection(Chats);
+
+          $scope.courseId = 0;
+
+          $scope.addNewChat = function(){
+            var newChat = {
+                'course': $scope.courseId,
+                'content': [
+                  {
+                    'userId': 0,
+                    'username': 'новый чат',
+                    'text': 'оставьте сообщение',
+                    'dt': new Date()
+                  }
+                ]
+            };
+            $scope.chats.push(newChat);
+          };
+
+          $scope.remove = function(chat){
+            $scope.chats.splice( $scope.chats.indexOf(chat), 1 );
           };
 
 
       }]);
+
+    angular
+      .module('lighthouse').controller('ChatCtrl', ['$scope','$meteor','$stateParams',
+        function($scope,$meteor,$stateParams){
+
+          $scope.newContent = {};
+
+          $scope.chat = $meteor.object(Chats, $stateParams.chatId);
+
+          $scope.addNewContent = function () {
+            $scope.newContent.userId = 3;
+            $scope.newContent.username = 'bot';
+            $scope.newContent.dt = new Date();
+            $scope.chat.content.push($scope.newContent);
+            $scope.newContent = {};
+          };
+
+      }]);
+
 }
 
 if (Meteor.isServer) {
   Meteor.startup(function () {
-    if (Properties.find().count() === 0) {
+    if (Chats.find().count() === 0) {
 
-      var properties = [
-        {'name': 'Dubstep-Free Zone',
-          'description': 'Can we please just for an evening not listen to dubstep.'},
-        {'name': 'All dubstep all the time 234124',
-          'description': 'Get it on!'},
-        {'name': 'All dubstep all the time jhghg',
-          'description': 'Get it on!'},
-        {'name': 'All dubstep all the time jhgjjhg ',
-          'description': 'Get it on!'},
-        {'name': 'All dubstep all the time jhgjkhg h',
-          'description': 'Get it on!'},
-        {'name': 'Savage lounging',
-          'description': 'Leisure suit required. And only fiercest manners.'}
+      var chats = [
+        {
+          'course': 0,
+          'content': [
+            {
+              'userId': 0,
+              'username': 'новый чат',
+              'text': 'оставьте сообщение',
+              'dt': new Date()
+            }
+          ]
+        }
       ];
 
-      for (var i = 0; i < properties.length; i++)
-        Properties.insert(properties[i]);
+      for (var i = 0; i < chats.length; i++)
+        Chats.insert(chats[i]);
 
     }
    });

@@ -1,0 +1,18 @@
+<div>
+	<div class="row">
+		<h1>Чаты</h1>
+	</div>
+	<div class="row">
+		<div class="col-sm-4">
+			<input type="text" ng-model="courseId">
+		</div>
+		<div class="col-sm-4">
+			<button class="btn btn-success" ng-click="addNewChat()">Добавить чат</button>
+		</div>
+	</div>
+	<div class="row btm" ng-repeat="chat in chats.slice().reverse()">
+		<div class="col-sm-8">
+			<h3><a href="/chats/{{chat._id}}"> Чат курса номер {{ chat.course }} </a></h3>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,26 @@
+<form>
+<div>
+	<div class="row">
+		<h1>Чат {{ chat.course }}</h1>
+	</div>
+	<div class="row">
+		<div class="col-sm-6">
+			<textarea class="form-control" ng-model="newContent.text"></textarea>
+		</div>
+		<div class="col-sm-2">
+			<button class="btn btn-success" ng-click="addNewContent();">Отправить</button>
+		</div>
+	</div>
+	<div class="row btm" ng-repeat="msg in chat.content.slice().reverse()">
+		<div class="col-sm-6">
+			<span class="username">{{ msg.username }}</span><br/>
+		</div>
+		<div class="col-sm-6">
+			<span class="timestamp">{{ msg.dt | date:'yyyy-MM-dd HH:mm:ss Z' }}</span>
+		</div>
+		<div class="col-sm-12">
+			{{ msg.text }}
+		</div>
+	</div>
+</div>
+</form>
