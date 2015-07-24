@@ -1,6 +1,6 @@
 <div>
 	<div class="row" ng-show="newchat">
-		<div class="col-xs-2 col-xs-offset-4">
+		<div class="col-xs-4 col-xs-offset-2">
 			<h3>Чат курса № {{ newchat.course }}</h3>
 			<h4>Кол-во сообщений: {{ newchat.content.length }}</h4>
 			<p>Последнее сообщение <br/>{{ newchat.content.slice(-1).pop().dt | date: 'yyyy-MM-dd HH:mm:ss Z' }}</p>

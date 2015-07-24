@@ -10,7 +10,7 @@
 			<textarea class="form-control" ng-model="newContent.text"></textarea>
 		</div>
 		<div class="col-xs-2">
-			<button class="btn btn-success" ng-click="addNewContent();">Отправить</button>
+			<button class="btn btn-success" ng-click="addNewContent();" ng-disabled="!newContent.text">Отправить</button>
 		</div>
 	</div>
 	<div class="row btm" ng-repeat="msg in chat.content.slice().reverse()">
