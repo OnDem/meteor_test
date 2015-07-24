@@ -16,7 +16,7 @@
 	<div class="row btm" ng-repeat="msg in chat.content.slice().reverse()">
 		<div class="row">
 			<div class="col-xs-6">
-				<span class="username">{{ msg.username }}</span><br/>
+				<span class="username">{{ msg.username }}</span>({{ msg.userId }})<br/>
 			</div>
 			<div class="col-xs-6">
 				<span class="timestamp">{{ msg.dt | date:'yyyy-MM-dd HH:mm:ss Z' }}</span>

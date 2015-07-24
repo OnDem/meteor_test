@@ -1,11 +1,9 @@
 Chats = new Mongo.Collection("chats");
 
 if (Meteor.isClient) {
-    angular
-      .module('lighthouse',['angular-meteor','ui.router','ui.bootstrap']);
+    var lh = angular.module('lighthouse',['angular-meteor','ui.router','ui.bootstrap']);
 
-    angular
-      .module('lighthouse').config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
+    lh.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
         function($urlRouterProvider, $stateProvider, $locationProvider){
 
           $locationProvider.html5Mode(true);
@@ -17,12 +15,12 @@ if (Meteor.isClient) {
               controller: 'ChatsCtrl'
             })
             .state('newchat', {
-              url: '/new/:courseId/role/:roleId',
+              url: '/new/:courseId/role/:roleId/user/:userId',
               templateUrl: 'chats.ng.html',
               controller: 'ChatsCtrl'
             })
             .state('chat', {
-              url: '/chats/:chatId/role/:roleId',
+              url: '/chats/:chatId',
               templateUrl: 'chat.ng.html',
               controller: 'ChatCtrl'
             });
@@ -30,58 +28,56 @@ if (Meteor.isClient) {
             $urlRouterProvider.otherwise('/chats');
     }]);
 
-    angular
-      .module('lighthouse').controller('ChatsCtrl', ['$scope','$meteor', '$location', '$stateParams',
-        function($scope,$meteor,$location,$stateParams){
+    lh.service('sessionService',function(){
+      this.userId = 0;
+      this.roleId = 0;
+      this.email  = '';
+    });
+
+    lh.controller('ChatsCtrl', ['$scope','$meteor', '$location', '$stateParams', 'sessionService',
+        function($scope,$meteor,$location,$stateParams,sessionService){
 
           $scope.chats = $meteor.collection(Chats);
 
-          $scope.addNewChat = function(courseId){
-            var newChat = {
-                'course': courseId,
-                'content': [
-                  {
-                    'userId': 0,
-                    'username': 'новый чат',
-                    'text': 'оставьте сообщение',
-                    'dt': new Date()
-                  }
-                ]
-            };
-            $scope.chats.push(newChat);
-            console.log(courseId);
-          };
-
-          if ( $stateParams.courseId > 0 )
+          if ( $stateParams.courseId > 0 && $stateParams.roleId > 0 && $stateParams.userId > 0 )
             {
               courseId = $stateParams.courseId - 0;
-              $scope.roleId = $stateParams.roleId;
+              $scope.roleId = sessionService.roleId = $stateParams.roleId;
+              $scope.userId = sessionService.userId = $stateParams.userId;
               $scope.newchat = $meteor.object(Chats,{course:courseId});
-              console.log($scope.newchat,$scope.roleId);
-              if($scope.newchat.course)
+              console.log($scope.newchat,$scope.roleId,sessionService.userId);
+              if( $scope.newchat.course )
                {
                  console.log('Yes');
                }
               else
                {
                  console.log('No');
-                 $scope.addNewChat(courseId);
+                 var newChat = {
+                   'course': courseId,
+                   'content': [
+                      {
+                        'userId': $scope.userId,
+                        'username': 'новый чат',
+                        'text': 'оставьте сообщение',
+                        'dt': new Date()
+                      }
+                   ]
+                 };
+                 $scope.chats.push(newChat);
+                 console.log(courseId);
                }
             }
           else
             {
-
               $scope.remove = function(chat){
                 $scope.chats.splice( $scope.chats.indexOf(chat), 1 );
               };
             }
-
-
       }]);
 
-    angular
-      .module('lighthouse').controller('ChatCtrl', ['$scope','$meteor','$location','$stateParams',
-        function($scope,$meteor,$location,$stateParams){
+    lh.controller('ChatCtrl', ['$scope','$meteor','$location','$stateParams','sessionService',
+        function($scope,$meteor,$location,$stateParams,sessionService){
 
           if ( $stateParams.chatId.length > 0 )
             {
@@ -90,16 +86,23 @@ if (Meteor.isClient) {
               $scope.chat = $meteor.object(Chats,$stateParams.chatId);
 
               $scope.addNewContent = function () {
-                if ( $stateParams.roleId == 5 )
-                  {
-                    $scope.newContent.userId = 5;
+                $scope.newContent.userId = sessionService.userId;
+                switch ( sessionService.roleId ) {
+                  case 5:  
                     $scope.newContent.username = 'Автор';
-                  }
-                else
-                  {
-                    $scope.newContent.userId = 3;
+                    break;
+                  case 44:  
                     $scope.newContent.username = 'Помощник';
-                  }
+                    break;
+                  case 333:  
+                    $scope.newContent.username = 'Модератор';
+                    break;
+                  case 2222:  
+                    $scope.newContent.username = 'Модератор';
+                    break;
+                  default:
+                    $scope.newContent.username = 'Аноним';
+                }
                 $scope.newContent.dt = new Date();
                 $scope.chat.content.push($scope.newContent);
                 $scope.newContent = {};
