@@ -1,6 +1,4 @@
 Chats = new Mongo.Collection("chats");
-redis = redis.createClient();
-sidekiq = new Sidekiq(redis);
 
 if (Meteor.isClient) {
     var lh = angular.module('lighthouse',['angular-meteor','ui.router','ui.bootstrap']);
@@ -90,16 +88,16 @@ if (Meteor.isClient) {
               $scope.addNewContent = function () {
                 $scope.newContent.userId = sessionService.userId;
                 switch ( sessionService.roleId ) {
-                  case '5':  
+                  case '5':
                     $scope.newContent.username = 'Автор';
                     break;
-                  case '44':  
+                  case '44':
                     $scope.newContent.username = 'Помощник';
                     break;
-                  case '333':  
+                  case '333':
                     $scope.newContent.username = 'Модератор';
                     break;
-                  case '2222':  
+                  case '2222':
                     $scope.newContent.username = 'Администратор';
                     break;
                   default:
@@ -107,6 +105,15 @@ if (Meteor.isClient) {
                 };
                 $scope.newContent.dt = new Date();
                 $scope.chat.content.push($scope.newContent);
+
+                Meteor.call('addTask',
+                    $scope.newContent.userId,
+                    $scope.chat.course,
+                    sessionService.roleId,
+                    $scope.newContent.text,
+                    function(){}
+                );
+
                 $scope.newContent = {};
               };
             }
@@ -120,7 +127,26 @@ if (Meteor.isClient) {
 }
 
 if (Meteor.isServer) {
+
+  Meteor.methods({
+    'addTask': function addTask(userId,courseId,roleId,comment) {
+        redis = Meteor.npmRequire('redis');
+        rclient = redis.createClient();
+        rclient.select(3, function() { /* ... */ });
+        Sidekiq = Meteor.npmRequire('sidekiq');
+        sidekiq = new Sidekiq(rclient,"TBS");
+
+        sidekiq.enqueue("ChatNotifier", [userId,courseId,roleId,comment], {
+              retry: false,
+              queue: "tbsmailers"
+        });
+    }
+  });  
+
   Meteor.startup(function () {
+
+
+
     if (Chats.find().count() === 0) {
 
       var chats = [
