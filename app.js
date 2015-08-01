@@ -1,4 +1,6 @@
 Chats = new Mongo.Collection("chats");
+redis = redis.createClient();
+sidekiq = new Sidekiq(redis);
 
 if (Meteor.isClient) {
     var lh = angular.module('lighthouse',['angular-meteor','ui.router','ui.bootstrap']);
@@ -88,21 +90,21 @@ if (Meteor.isClient) {
               $scope.addNewContent = function () {
                 $scope.newContent.userId = sessionService.userId;
                 switch ( sessionService.roleId ) {
-                  case 5:  
+                  case '5':  
                     $scope.newContent.username = 'Автор';
                     break;
-                  case 44:  
+                  case '44':  
                     $scope.newContent.username = 'Помощник';
                     break;
-                  case 333:  
+                  case '333':  
                     $scope.newContent.username = 'Модератор';
                     break;
-                  case 2222:  
-                    $scope.newContent.username = 'Модератор';
+                  case '2222':  
+                    $scope.newContent.username = 'Администратор';
                     break;
                   default:
                     $scope.newContent.username = 'Аноним';
-                }
+                };
                 $scope.newContent.dt = new Date();
                 $scope.chat.content.push($scope.newContent);
                 $scope.newContent = {};
